@@ -7,36 +7,38 @@ import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import { useNavigate } from 'react-router-dom'
 import * as XLSX from 'xlsx'
-const CouponformData = () => {
+const TaskerServicesList = () => {
   console.log('product')
   const navigate = useNavigate()
   const [data, setData] = useState([])
 
   const getData = async () => {
     try {
-      const res = await axios.get(`${process.env.REACT_APP_BACKEND_API}/clients`)
+      const res = await axios.get(`${process.env.REACT_APP_BACKEND_API}/service`)
       setData(res.data)
+      console.log(res.data)
     } catch (error) {
       // Handle error
       console.error('Error fetching data:', error)
     }
   }
+  console.log(data)
 
-  // const handleDel = async (id) => {
-  //   try {
-  //     const res = await axios.delete(`${process.env.REACT_APP_BACKEND_API}/clients/${id}`)
-  //     console.log(res.data)
-  //     // Update the state after successful deletion
-  //     getData()
-  //     // Notify user
-  //     message.error('deleted successfully')
-  //   } catch (error) {
-  //     // Handle error
-  //     console.error('Error deleting Product:', error)
-  //     // Notify user
-  //     message.error('Error deleting Product')
-  //   }
-  // }
+  const handleDel = async (id) => {
+    try {
+      const res = await axios.delete(`${process.env.REACT_APP_BACKEND_API}/service/${id}`)
+      console.log(res.data)
+      // Update the state after successful deletion
+      getData()
+      // Notify user
+      message.error('deleted successfully')
+    } catch (error) {
+      // Handle error
+      console.error('Error deleting Product:', error)
+      // Notify user
+      message.error('Error deleting Product')
+    }
+  }
 
   useEffect(() => {
     getData()
@@ -67,7 +69,7 @@ const CouponformData = () => {
     const url = URL.createObjectURL(excelBlob)
     const link = document.createElement('a')
     link.href = url
-    link.setAttribute('download', 'clients.xlsx')
+    link.setAttribute('download', 'taskers-data.xlsx')
     document.body.appendChild(link)
 
     // Trigger the download
@@ -84,11 +86,8 @@ const CouponformData = () => {
       <CCard className="mb-4">
         <CCardHeader className="d-flex" style={{ justifyContent: 'space-between' }}>
           <motion.h2 className="fw-bold" style={{ marginBottom: '40px' }}>
-            Clients List
+            Services List
           </motion.h2>
-          <button style={{height:"45px"}} className="btn btn-success" onClick={downloadExcel}>
-            <i class="fa-solid fa-download"></i> Download in Excel
-          </button>
         </CCardHeader>
         <CCardBody>
           {/* <input
@@ -97,35 +96,49 @@ const CouponformData = () => {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           /> */}
-             <motion.div className="table-responsive">
+          <motion.div className="table-responsive">
             <table className="table">
               <thead>
                 <tr>
-                  <th scope="col">First Name</th>
-
-                  <th scope="col">Email</th>
-                  <th scope="col">Phone</th>
-
-                  <th scope="col">zipcode</th>
-                  <th scope="col">Total Orders</th>
+                  <th scope="col">image</th>
+                  <th scope="col">username</th>
+                  <th scope="col">location</th>
+                  <th scope="col">phone</th>
+                  <th scope="col">price per hour</th>
+                  <th scope="col">service category</th>
+                  <th scope="col">total task</th>
+                  <th scope="col">vehicle</th>
+                  <th scope="col">action</th>
                 </tr>
               </thead>
               <tbody>
                 {data.map((res) => (
                   <tr key={res._id}>
-                    <td>{res.firstName}</td>
+                    <td><img src={res.image} alt='img...' className='' style={{width: "50px", height: "50px"}}/></td>
 
                     <td>
-                      <p style={{ color: 'green' }}>{res.email}</p>
+                      <p style={{ color: 'green' }}>{res.userName}</p>
+                    </td>
+                    <td>
+                      <p>{res.location}</p>
                     </td>
                     <td>
                       <p>{res.phone}</p>
                     </td>
                     <td>
-                      <p>{res.zip}</p>
+                      <p>{res.pricePerHour}</p>
+                    </td>
+                     <td>
+                      <p>{res.serviceCategory}</p>
+                    </td>
+                     <td>
+                      <p>{res.totaltask}</p>
                     </td>
                     <td>
-                      <p>{res.order.length}</p>
+                      <p>{res.vehicle}</p>
+                    </td>
+                    <td className='d-flex' style={{gap:"10px"}}>
+                      <button className='btn btn-danger' onClick={()=>handleDel(res._id)}>Delete</button>
                     </td>
                   </tr>
                 ))}
@@ -138,4 +151,4 @@ const CouponformData = () => {
   )
 }
 
-export default CouponformData
+export default TaskerServicesList

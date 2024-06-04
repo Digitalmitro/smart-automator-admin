@@ -56,16 +56,14 @@ const TaskerServices = () => {
           <motion.h2 className="fw-bold" style={{ marginBottom: '40px' }}>
             Create Tasker Services
           </motion.h2>
-          <button className="btn btn-info text-white" style={{ height: '50px' }}>
-            Services List
-          </button>
+         
         </CCardHeader>
         <CCardBody>
           <motion.div>
             <form class="row g-3" onSubmit={postTasker}>
               <div class="col-md-6">
                 <label for="inputEmail4" class="form-label">
-                  Image URL
+                   User Image URL
                 </label>
                 <input
                   value={image}

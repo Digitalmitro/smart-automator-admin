@@ -46,12 +46,12 @@ let _nav = [
       {
         component: CNavItem,
         name: 'Tasker Lists',
-        to: 'tasker-list',
+        to: '/tasker-list',
       },
       {
         component: CNavItem,
-        name: 'Tasker Services ',
-        to: '/',
+        name: 'Tasker Services List' ,
+        to: '/tasker-services-list',
       },
       
      

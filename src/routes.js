@@ -44,6 +44,11 @@ const CreateEmployeeProfile = React.lazy(
 const TaskerServices = React.lazy(
   () => import('./views/CreateEmployeeProfile/TaskterServices'),
 )
+
+const TaskerServicesList = React.lazy(
+  () => import('./views/CreateEmployeeProfile/TaskerServicesList'),
+)
+
 const EditUserDetails = React.lazy(() => import('./views/CreateEmployeeProfile/EditEmployee'))
 // Sales status
 // const salesStatus = React.lazy(() => import('./views/Leads_Status/Sales_Status'))
@@ -105,6 +110,7 @@ const routes = [
   { path: '/tasker-list', name: 'Tasker-list', element: ProductList, exact: true },
   { path: '/create-tasker-list', name: 'Create-Tasker-list', element: CreateEmployeeProfile, exact: true },
   { path: '/create-tasker-services/:id', name: 'Create-Tasker-Services', element: TaskerServices, exact: true },
+  { path: '/tasker-services-list', name: 'Tasker-Services-List', element: TaskerServicesList, exact: true },
   { path: '/client_list', name: 'client_List', element: CouponformData, exact: true },
   // { path: '/update-product/:id', name: 'Update product', element: UpdateProduct, exact: true },
   // { path: '/order-list', name: 'Order list', element: AllOrder, exact: true },
