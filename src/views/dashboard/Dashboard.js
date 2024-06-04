@@ -190,51 +190,53 @@ const Dashboard = () => {
     getServicesData()
     getClientData()
     getOrderData()
-
   }, [token])
-  const [data,setData]=useState([])
-  const [orderData,setOrderData]=useState([])
-  const [serviceData,setServiceData]=useState([])
-  const [clientData,setClientData]=useState([])
-  const getData=async()=>{
-    const res=await axios.get(`${process.env.REACT_APP_BACKEND_API}/taskers`)
+  const [data, setData] = useState([])
+  const [orderData, setOrderData] = useState([])
+  const [serviceData, setServiceData] = useState([])
+  const [clientData, setClientData] = useState([])
+  const getData = async () => {
+    const res = await axios.get(`${process.env.REACT_APP_BACKEND_API}/taskers`)
     setData(res.data)
   }
-  const getServicesData=async()=>{
-    const res=await axios.get(`${process.env.REACT_APP_BACKEND_API}/service`)
+  const getServicesData = async () => {
+    const res = await axios.get(`${process.env.REACT_APP_BACKEND_API}/service`)
     setServiceData(res.data)
   }
-  const getClientData=async()=>{
-    const res=await axios.get(`${process.env.REACT_APP_BACKEND_API}/clients`)
+  const getClientData = async () => {
+    const res = await axios.get(`${process.env.REACT_APP_BACKEND_API}/clients`)
     setClientData(res.data)
   }
-  const getOrderData = async()=>{
-    const res=await axios.get(`${process.env.REACT_APP_BACKEND_API}/order`)
+  const getOrderData = async () => {
+    const res = await axios.get(`${process.env.REACT_APP_BACKEND_API}/order`)
     setOrderData(res.data)
   }
   return (
     <>
       <CRow>
-      <CCol style={{cursor:"pointer"}} xs={3} onClick={()=>navigate("/tasker-list")}>
+        <CCol style={{ cursor: 'pointer' }} xs={3} onClick={() => navigate('/tasker-list')}>
           <div className="border-start border-start-4 border-start-info py-1 px-3">
             <div className="text-body-secondary text-truncate small">Total Taskers</div>
             <div className="fs-5 fw-semibold">{data?.length}</div>
           </div>
-          
         </CCol>
-        <CCol style={{cursor:"pointer"}} xs={3} onClick={()=>navigate("/tasker-list")}>
+        <CCol style={{ cursor: 'pointer' }} xs={3} onClick={() => navigate('/client_list')}>
           <div className="border-start border-start-4 border-start-info py-1 px-3">
             <div className="text-body-secondary text-truncate small">Total clients</div>
             <div className="fs-5 fw-semibold">{clientData?.length}</div>
           </div>
         </CCol>
-        <CCol style={{cursor:"pointer"}} xs={3} onClick={()=>navigate("/tasker-list")}>
+        <CCol
+          style={{ cursor: 'pointer' }}
+          xs={3}
+          onClick={() => navigate('/tasker-services-list')}
+        >
           <div className="border-start border-start-4 border-start-info py-1 px-3">
             <div className="text-body-secondary text-truncate small">Total services</div>
             <div className="fs-5 fw-semibold">{serviceData?.length}</div>
           </div>
         </CCol>
-        <CCol style={{cursor:"pointer"}} xs={3} onClick={()=>navigate("/tasker-list")}>
+        <CCol style={{ cursor: 'pointer' }} xs={3} onClick={() => navigate('/')}>
           <div className="border-start border-start-4 border-start-info py-1 px-3">
             <div className="text-body-secondary text-truncate small">Total order</div>
             <div className="fs-5 fw-semibold">{orderData?.length}</div>
