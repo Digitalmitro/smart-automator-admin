@@ -8,17 +8,45 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { message } from 'antd'
 
 const TaskerServices = () => {
-  const navigate = useNavigate()
-  const { id } = useParams()
   const [tasker, setTasker] = useState()
-  const getTasker = async () => {
+  const getData = async () => {
     const res = await axios.get(`${process.env.REACT_APP_BACKEND_API}/taskers/${id}`)
     setTasker(res.data)
   }
   console.log(tasker)
+  const navigate = useNavigate()
+  const { id } = useParams()
+  const [image, setImage] = useState('')
+  const [description, setDescription] = useState('')
+  const [vehicle, setVehicle] = useState('')
+  const [serviceCategory, setServiceCategory] = useState('')
+  const [location, setLocation] = useState('')
+  const [pricePerHour, setPricePerHour] = useState(0)
+  const postTasker = async (e) => {
+    e.preventDefault()
+    const payload = {
+      image,
+      phone: tasker?.phone,
+      userName: tasker?.firstName,
+      description,
+      vehicle,
+      serviceCategory,
+      location,
+      pricePerHour,
+      user_id: tasker?._id,
+    }
+    try {
+      const res = await axios.post(`${process.env.REACT_APP_BACKEND_API}/service`, payload)
+      console.log(res)
+      message.success(res.data)
+  
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   useEffect(() => {
-    getTasker()
+    getData()
   }, [])
   return (
     <>
@@ -34,18 +62,27 @@ const TaskerServices = () => {
         </CCardHeader>
         <CCardBody>
           <motion.div>
-            <form class="row g-3">
+            <form class="row g-3" onSubmit={postTasker}>
               <div class="col-md-6">
                 <label for="inputEmail4" class="form-label">
                   Image URL
                 </label>
-                <input placeholder="URL" type="text" class="form-control" id="inputEmail4" />
+                <input
+                  value={image}
+                  onChange={(e) => setImage(e.target.value)}
+                  placeholder="https://postimages.org/ Direct-URL"
+                  type="text"
+                  class="form-control"
+                  id="inputEmail4"
+                />
               </div>
               <div class="col-md-6">
                 <label for="inputPassword4" class="form-label">
                   Description
                 </label>
                 <input
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
                   placeholder="About Tasker"
                   type="text"
                   class="form-control"
@@ -56,7 +93,13 @@ const TaskerServices = () => {
                 <label for="inputEmail4" class="form-label">
                   vehicle
                 </label>
-                <select className="ms-2" name="" id="">
+                <select
+                  value={vehicle}
+                  onChange={(e) => setVehicle(e.target.value)}
+                  className="ms-2"
+                  name=""
+                  id=""
+                >
                   <option value="Yes">Yes</option>
                   <option value="No">No</option>
                 </select>
@@ -65,7 +108,13 @@ const TaskerServices = () => {
                 <label for="inputPassword4" class="form-label">
                   Service Category
                 </label>
-                <select className="ms-2" name="" id="">
+                <select
+                  value={serviceCategory}
+                  onChange={(e) => setServiceCategory(e.target.value)}
+                  className="ms-2"
+                  name=""
+                  id=""
+                >
                   <option value="Cleaning">Cleaing</option>
                   <option value="Moving">Moving</option>
                 </select>
@@ -75,28 +124,30 @@ const TaskerServices = () => {
                 <label for="inputCity" class="form-label">
                   Location
                 </label>
-                <input placeholder="location" type="text" class="form-control" id="inputCity" />
+                <input
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
+                  placeholder="location"
+                  type="text"
+                  class="form-control"
+                  id="inputCity"
+                />
               </div>
 
               <div class="col-md-2">
                 <label for="inputZip" class="form-label">
                   Price Per Hour
                 </label>
-                <input placeholder='per hour $' type="number" class="form-control" id="inputZip" />
-              </div>
-              <div class="col-md-6">
-                <label for="inputCity" class="form-label">
-                  Location
-                </label>
-                <input placeholder="location" type="text" class="form-control" id="inputCity" />
+                <input
+                  value={pricePerHour}
+                  onChange={(e) => setPricePerHour(e.target.value)}
+                  placeholder="per hour $"
+                  type="number"
+                  class="form-control"
+                  id="inputZip"
+                />
               </div>
 
-              <div class="col-md-2">
-                <label for="inputZip" class="form-label">
-                  Price Per Hour
-                </label>
-                <input placeholder='per hour $' type="number" class="form-control" id="inputZip" />
-              </div>
               <div class="col-12">
                 <button type="submit" class="btn btn-primary">
                   Register Tasker
