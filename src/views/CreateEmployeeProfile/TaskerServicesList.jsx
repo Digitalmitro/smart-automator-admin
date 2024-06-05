@@ -114,7 +114,14 @@ const TaskerServicesList = () => {
               <tbody>
                 {data.map((res) => (
                   <tr key={res._id}>
-                    <td><img src={res.image} alt='img...' className='' style={{width: "50px", height: "50px"}}/></td>
+                    <td>
+                      <img
+                        src={`${process.env.REACT_APP_BACKEND_API}/uploads/${res.image}`}
+                        alt={`${res.image}`}
+                        className=""
+                        style={{ width: '50px', height: '50px' }}
+                      />
+                    </td>
 
                     <td>
                       <p style={{ color: 'green' }}>{res.userName}</p>
@@ -128,17 +135,19 @@ const TaskerServicesList = () => {
                     <td>
                       <p>{res.pricePerHour}</p>
                     </td>
-                     <td>
+                    <td>
                       <p>{res.serviceCategory}</p>
                     </td>
-                     <td>
+                    <td>
                       <p>{res.totaltask}</p>
                     </td>
                     <td>
                       <p>{res.vehicle}</p>
                     </td>
-                    <td className='d-flex' style={{gap:"10px"}}>
-                      <button className='btn btn-danger' onClick={()=>handleDel(res._id)}>Delete</button>
+                    <td className="d-flex" style={{ gap: '10px' }}>
+                      <button className="btn btn-danger" onClick={() => handleDel(res._id)}>
+                        Delete
+                      </button>
                     </td>
                   </tr>
                 ))}

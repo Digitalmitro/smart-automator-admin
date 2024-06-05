@@ -1,53 +1,59 @@
-import { motion } from 'framer-motion'
-import { useEffect, useState } from 'react'
-import { CCard, CCardHeader, CCardBody } from '@coreui/react'
-import axios from 'axios'
-import { ToastContainer, toast } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css'
-import { useNavigate, useParams } from 'react-router-dom'
-import { message } from 'antd'
+import { motion } from 'framer-motion';
+import { useEffect, useState } from 'react';
+import { CCard, CCardHeader, CCardBody } from '@coreui/react';
+import axios from 'axios';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { useNavigate, useParams } from 'react-router-dom';
+import { message } from 'antd';
 
 const TaskerServices = () => {
-  const [tasker, setTasker] = useState()
+  const [tasker, setTasker] = useState();
+  const [file, setFile] = useState(null); // State to hold the selected file
   const getData = async () => {
-    const res = await axios.get(`${process.env.REACT_APP_BACKEND_API}/taskers/${id}`)
-    setTasker(res.data)
-  }
-  console.log(tasker)
-  const navigate = useNavigate()
-  const { id } = useParams()
-  const [image, setImage] = useState('')
-  const [description, setDescription] = useState('')
-  const [vehicle, setVehicle] = useState('')
-  const [serviceCategory, setServiceCategory] = useState('')
-  const [location, setLocation] = useState('')
-  const [pricePerHour, setPricePerHour] = useState(0)
+    const res = await axios.get(`${process.env.REACT_APP_BACKEND_API}/taskers/${id}`);
+    setTasker(res.data);
+  };
+  console.log(tasker);
+  const navigate = useNavigate();
+  const { id } = useParams();
+  const [description, setDescription] = useState('');
+  const [vehicle, setVehicle] = useState('Yes');
+  const [serviceCategory, setServiceCategory] = useState('Cleaning');
+  const [location, setLocation] = useState('');
+  const [pricePerHour, setPricePerHour] = useState(0);
   const postTasker = async (e) => {
-    e.preventDefault()
-    const payload = {
-      image,
-      phone: tasker?.phone,
-      userName: tasker?.firstName,
-      description,
-      vehicle,
-      serviceCategory,
-      location,
-      pricePerHour,
-      user_id: tasker?._id,
-    }
+    e.preventDefault();
     try {
-      const res = await axios.post(`${process.env.REACT_APP_BACKEND_API}/service`, payload)
-      console.log(res)
-      message.success(res.data)
-  
+      // Create form data
+      const formData = new FormData();
+      formData.append('image', file); // Append the selected file to the form data
+      formData.append('phone', tasker?.phone);
+      formData.append('userName', tasker?.firstName);
+      formData.append('description', description);
+      formData.append('vehicle', vehicle);
+      formData.append('serviceCategory', serviceCategory);
+      formData.append('location', location);
+      formData.append('pricePerHour', pricePerHour);
+      formData.append('user_id', tasker?._id);
+
+      // Post form data
+      const res = await axios.post(`${process.env.REACT_APP_BACKEND_API}/service`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data', // Set content type to multipart/form-data for file upload
+        },
+      });
+      console.log(res);
+      message.success(res.data);
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-  }
+  };
 
   useEffect(() => {
-    getData()
-  }, [])
+    getData();
+  }, []);
+
   return (
     <>
       <ToastContainer />
@@ -56,26 +62,23 @@ const TaskerServices = () => {
           <motion.h2 className="fw-bold" style={{ marginBottom: '40px' }}>
             Create Tasker Services
           </motion.h2>
-         
         </CCardHeader>
         <CCardBody>
           <motion.div>
-            <form class="row g-3" onSubmit={postTasker}>
-              <div class="col-md-6">
-                <label for="inputEmail4" class="form-label">
-                   User Image URL
+            <form className="row g-3" onSubmit={postTasker}>
+              <div className="col-md-6">
+                <label htmlFor="inputFile" className="form-label">
+                  User Image Upload
                 </label>
                 <input
-                  value={image}
-                  onChange={(e) => setImage(e.target.value)}
-                  placeholder="https://postimages.org/ Direct-URL"
-                  type="text"
-                  class="form-control"
-                  id="inputEmail4"
+                  type="file"
+                  className="form-control"
+                  id="inputFile"
+                  onChange={(e) => setFile(e.target.files[0])} // Handle file selection
                 />
               </div>
-              <div class="col-md-6">
-                <label for="inputPassword4" class="form-label">
+              <div className="col-md-6">
+                <label htmlFor="inputPassword4" className="form-label">
                   Description
                 </label>
                 <input
@@ -83,71 +86,66 @@ const TaskerServices = () => {
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="About Tasker"
                   type="text"
-                  class="form-control"
+                  className="form-control"
                   id="inputPassword4"
                 />
               </div>
-              <div class="col-md-6">
-                <label for="inputEmail4" class="form-label">
-                  vehicle
+              <div className="col-md-6">
+                <label htmlFor="inputVehicle" className="form-label">
+                  Vehicle
                 </label>
                 <select
                   value={vehicle}
                   onChange={(e) => setVehicle(e.target.value)}
-                  className="ms-2"
-                  name=""
-                  id=""
+                  className="form-select"
+                  id="inputVehicle"
                 >
                   <option value="Yes">Yes</option>
                   <option value="No">No</option>
                 </select>
               </div>
-              <div class="col-md-6">
-                <label for="inputPassword4" class="form-label">
+              <div className="col-md-6">
+                <label htmlFor="inputServiceCategory" className="form-label">
                   Service Category
                 </label>
                 <select
                   value={serviceCategory}
                   onChange={(e) => setServiceCategory(e.target.value)}
-                  className="ms-2"
-                  name=""
-                  id=""
+                  className="form-select"
+                  id="inputServiceCategory"
                 >
-                  <option value="Cleaning">Cleaing</option>
+                  <option value="Cleaning">Cleaning</option>
                   <option value="Moving">Moving</option>
                 </select>
               </div>
-
-              <div class="col-md-6">
-                <label for="inputCity" class="form-label">
+              <div className="col-md-6">
+                <label htmlFor="inputLocation" className="form-label">
                   Location
                 </label>
                 <input
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
-                  placeholder="location"
+                  placeholder="Location"
                   type="text"
-                  class="form-control"
-                  id="inputCity"
+                  className="form-control"
+                  id="inputLocation"
                 />
               </div>
-
-              <div class="col-md-2">
-                <label for="inputZip" class="form-label">
+              <div className="col-md-2">
+                <label htmlFor="inputPricePerHour" className="form-label">
                   Price Per Hour
                 </label>
                 <input
                   value={pricePerHour}
                   onChange={(e) => setPricePerHour(e.target.value)}
-                  placeholder="per hour $"
+                  placeholder="Per Hour $"
                   type="number"
-                  class="form-control"
-                  id="inputZip"
+                  className="form-control"
+                  id="inputPricePerHour"
                 />
               </div>
-
-              <div class="col-12">
-                <button type="submit" class="btn btn-primary">
+              <div className="col-12">
+                <button type="submit" className="btn btn-primary">
                   Register Tasker
                 </button>
               </div>
@@ -156,7 +154,7 @@ const TaskerServices = () => {
         </CCardBody>
       </CCard>
     </>
-  )
-}
+  );
+};
 
-export default TaskerServices
+export default TaskerServices;
