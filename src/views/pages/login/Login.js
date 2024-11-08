@@ -22,9 +22,9 @@ const Login = () => {
       email: email,
       password: password,
     };
-    if(!load){
-      message.warning("please wait for the server")
-    }
+    // if(!load){
+      // message.warning("please wait for the server")
+    // }
     try {
       const response = await axios.post(
         `${process.env.REACT_APP_BACKEND_API}/loginadmin`,
@@ -34,6 +34,7 @@ const Login = () => {
       console.log(response.data);
       Cookies.set("token", response.data.token);
       localStorage.setItem("user", JSON.stringify(response.data.user));
+      localStorage.setItem("token", response.data.token);
       toast.success(response.data.status, {});
       setTimeout(() => {
         navigate("/");

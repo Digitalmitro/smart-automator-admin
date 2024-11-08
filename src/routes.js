@@ -20,6 +20,12 @@ const User = React.lazy(() => import('./views/User/User'))
 const UserList = React.lazy(() => import('./views/User/UserList'))
 // Profile
 const Login = React.lazy(() => import('./views/pages/login/Login'))
+const AddServiceCategory = React.lazy(() => import('./views/pages/services/AddServiceCategory'))
+const ServiceCategoriesList = React.lazy(() => import('./views/pages/services/ServiceCategoriesList'))
+
+const AddService = React.lazy(() => import('./views/pages/services/AddService'))
+const ServiceList = React.lazy(() => import('./views/pages/services/ServiceList'))
+const ServiceDetails = React.lazy(() => import('./views/pages/services/ServiceDetails'))
 
 // Create Callback
 // const CreateCallback = React.lazy(() => import('./views/Leads_Create/CreateCallback'))
@@ -112,6 +118,13 @@ const routes = [
   { path: '/create-tasker-services/:id', name: 'Create-Tasker-Services', element: TaskerServices, exact: true },
   { path: '/tasker-services-list', name: 'Tasker-Services-List', element: TaskerServicesList, exact: true },
   { path: '/client_list', name: 'client_List', element: CouponformData, exact: true },
+
+  { path: '/add-service', name: 'Add-Service', element: AddService, exact: true },
+  { path: '/service-list', name: 'Service-List', element: ServiceList, exact: true },
+  { path: '/service-details/:id', name: 'Service-Details', element: ServiceDetails, exact: true },
+
+  { path: '/add-service-category', name: 'Add-Service-Category', element: AddServiceCategory, exact: true },
+  { path: '/service-categories-list', name: 'Service-Categories-List', element: ServiceCategoriesList, exact: true },
   // { path: '/update-product/:id', name: 'Update product', element: UpdateProduct, exact: true },
   // { path: '/order-list', name: 'Order list', element: AllOrder, exact: true },
   // { path: '/view-order/:id', name: 'View Order', element: ViewOrder, exact: true },

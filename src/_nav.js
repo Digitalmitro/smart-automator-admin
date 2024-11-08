@@ -52,11 +52,47 @@ let _nav = [
         component: CNavItem,
         name: 'Tasker Services List' ,
         to: '/tasker-services-list',
-      },
-      
-     
+      }, 
     ],
   },
+
+
+  {
+    component: CNavGroup,
+    name: 'Service Categories',
+    icon: <CIcon icon={cilShieldAlt} customClassName="nav-icon" />,
+    items: [
+      {
+        component: CNavItem,
+        name: 'Add Service Category' ,
+        to: '/add-service-category',
+      },
+      {
+        component: CNavItem,
+        name: 'Service Categories',
+        to: '/service-categories-list',
+      },
+    ],
+  },
+
+  {
+    component: CNavGroup,
+    name: 'Services',
+    icon: <CIcon icon={cilShieldAlt} customClassName="nav-icon" />,
+    items: [
+      {
+        component: CNavItem,
+        name: 'Add Service' ,
+        to: '/add-service',
+      },
+      {
+        component: CNavItem,
+        name: 'Services List',
+        to: '/service-list',
+      },
+    ],
+  },
+
   {
     component: CNavGroup,
     name: 'Manage Client',
