@@ -6,39 +6,76 @@ import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import { useNavigate } from 'react-router-dom'
 
-
 const AddService = () => {
   const navigate = useNavigate()
   const [serviceName, setServiceName] = useState('')
+  const [shortDescription, setShortDescription] = useState('')
   const [description, setDescription] = useState('')
   const [hourlyCharge, setHourlyCharge] = useState('')
   const [serviceCategory, setServiceCategory] = useState('')
   const [categories, setCategories] = useState([])
   const [questions, setQuestions] = useState([{ question: '', options: [''] }])
+  const [image, setImage] = useState(null)
+  const [imageUrl, setImageUrl] = useState('')
   const token = localStorage.getItem('token')
+
+  const handleImageChange = async (e) => {
+    const file = e.target.files[0]
+    setImage(file)
+
+    const formData = new FormData()
+    formData.append('file', file)
+
+    try {
+      const res = await axios.post(
+        `${process.env.REACT_APP_BACKEND_API}/upload`,
+        formData,
+        {
+          headers: {
+            token,
+            'Content-Type': 'multipart/form-data',
+          },
+        },
+      )
+      setImageUrl(res.data.fileUrl)
+      toast.success('Image uploaded successfully!')
+    } catch (error) {
+      toast.error('Failed to upload image.')
+    }
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+
     const payload = {
       serviceName,
+      shortDescription,
       description,
       hourlyCharge,
       serviceCategory,
       questions,
+      image: imageUrl,
     }
 
     try {
       const res = await axios.post(
         `${process.env.REACT_APP_BACKEND_API}/admin/add-service`,
         payload,
-        { headers: { token } },
+        {
+          headers: {
+            token,
+          },
+        },
       )
       toast.success(res.data.message || 'Service added successfully')
       setServiceName('')
+      setShortDescription('')
       setDescription('')
       setHourlyCharge('')
       setServiceCategory('')
       setQuestions([{ question: '', options: [''] }])
+      setImage(null)
+      setImageUrl('')
       navigate('/service-list')
     } catch (error) {
       toast.error(error.response?.data?.message || 'Failed to add service')
@@ -86,13 +123,16 @@ const AddService = () => {
       navigate('/login')
     } else {
       // Fetch service categories for the dropdown
-      axios.get(`${process.env.REACT_APP_BACKEND_API}/admin/service-categories`, {
-        headers: { token },
-      }).then(res => {
-        setCategories(res.data.categories)
-      }).catch(() => {
-        toast.error('Failed to load service categories')
-      })
+      axios
+        .get(`${process.env.REACT_APP_BACKEND_API}/admin/service-categories`, {
+          headers: { token },
+        })
+        .then((res) => {
+          setCategories(res.data.categories)
+        })
+        .catch(() => {
+          toast.error('Failed to load service categories')
+        })
     }
   }, [token])
 
@@ -125,6 +165,19 @@ const AddService = () => {
                   type="text"
                   className="form-control"
                   id="serviceName"
+                  required
+                />
+              </div>
+              <div className="col-md-6">
+                <label htmlFor="shortDescription" className="form-label">
+                  Short Description
+                </label>
+                <input
+                  value={shortDescription}
+                  onChange={(e) => setShortDescription(e.target.value)}
+                  type="text"
+                  className="form-control"
+                  id="shortDescription"
                   required
                 />
               </div>
@@ -173,7 +226,26 @@ const AddService = () => {
                   ))}
                 </select>
               </div>
-
+              
+              <div className="col-md-6">
+                <label htmlFor="image" className="form-label">
+                  Upload Image
+                </label>
+                <input
+                  type="file"
+                  className="form-control"
+                  id="image"
+                  onChange={handleImageChange}
+                  accept="image/*"
+                  required
+                />
+              </div>
+              
+              {imageUrl && 
+              <>
+              <img src={imageUrl} style={{maxWidth: "150px"}}></img>
+              </>
+              }
               {/* Dynamic Questions and Options */}
               {questions.map((question, qIndex) => (
                 <div key={qIndex} className="col-12">
@@ -223,23 +295,21 @@ const AddService = () => {
                     className="btn btn-outline-primary mb-3"
                     onClick={() => handleAddOption(qIndex)}
                   >
-                    Add Another Option
+                    Add Option
                   </button>
                 </div>
               ))}
+
               <button
                 type="button"
-                className="btn btn-outline-secondary mb-4"
+                className="btn btn-outline-success"
                 onClick={handleAddQuestion}
               >
                 Add Another Question
               </button>
-
-              <div className="col-12">
-                <button type="submit" className="btn btn-primary">
-                  Add Service
-                </button>
-              </div>
+              <button type="submit" className="btn btn-primary">
+                Add Service
+              </button>
             </form>
           </motion.div>
         </CCardBody>

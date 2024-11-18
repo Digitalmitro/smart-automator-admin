@@ -42,45 +42,20 @@ const ServiceDetails = () => {
     setService({ ...service, [field]: value })
   }
 
-  const handleQuestionChange = (qIndex, value) => {
-    const updatedQuestions = [...service.questions]
-    updatedQuestions[qIndex].question = value
-    setService({ ...service, questions: updatedQuestions })
-  }
-
-  const handleOptionChange = (qIndex, oIndex, value) => {
-    const updatedQuestions = [...service.questions]
-    updatedQuestions[qIndex].options[oIndex] = value
-    setService({ ...service, questions: updatedQuestions })
-  }
-
-  const handleAddQuestion = () => {
-    setService({
-      ...service,
-      questions: [...service.questions, { question: '', options: [''] }],
-    })
-  }
-
-  const handleDeleteQuestion = (qIndex) => {
-    if (service.questions.length > 1) {
-      setService({
-        ...service,
-        questions: service.questions.filter((_, index) => index !== qIndex),
+  const handleImageUpload = async (file) => {
+    const formData = new FormData()
+    formData.append('file', file)
+    try {
+      const res = await axios.post(`${process.env.REACT_APP_BACKEND_API}/upload`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          token,
+        },
       })
-    }
-  }
-
-  const handleAddOption = (qIndex) => {
-    const updatedQuestions = [...service.questions]
-    updatedQuestions[qIndex].options.push('')
-    setService({ ...service, questions: updatedQuestions })
-  }
-
-  const handleDeleteOption = (qIndex, oIndex) => {
-    const updatedQuestions = [...service.questions]
-    if (updatedQuestions[qIndex].options.length > 1) {
-      updatedQuestions[qIndex].options = updatedQuestions[qIndex].options.filter((_, index) => index !== oIndex)
-      setService({ ...service, questions: updatedQuestions })
+      setService({ ...service, image: res.data.fileUrl })
+      toast.success('Image uploaded successfully')
+    } catch (error) {
+      toast.error('Image upload failed')
     }
   }
 
@@ -151,6 +126,40 @@ const ServiceDetails = () => {
                 />
               </div>
               <div className="col-md-6">
+                <label htmlFor="shortDescription" className="form-label">
+                  Short Description
+                </label>
+                <input
+                  type="text"
+                  className="form-control"
+                  id="shortDescription"
+                  value={service.shortDescription}
+                  onChange={(e) => handleInputChange('shortDescription', e.target.value)}
+                  required
+                  disabled={!isEditMode}
+                />
+              </div>
+              <div className="col-md-6">
+                <label htmlFor="image" className="form-label">
+                  Image
+                </label>
+                <input
+                  type="file"
+                  className="form-control"
+                  id="image"
+                  onChange={(e) => handleImageUpload(e.target.files[0])}
+                  disabled={!isEditMode}
+                />
+                {service.image && (
+                  <img
+                    src={service.image}
+                    alt="Service"
+                    className="img-thumbnail mt-2"
+                    style={{ maxWidth: '200px' }}
+                  />
+                )}
+              </div>
+              <div className="col-md-6">
                 <label htmlFor="hourlyCharge" className="form-label">
                   Hourly Charge
                 </label>
@@ -171,7 +180,7 @@ const ServiceDetails = () => {
                 <select
                   className="form-control"
                   id="serviceCategory"
-                  value={service.serviceCategory._id} // Set pre-selected value
+                  value={service.serviceCategory._id}
                   onChange={(e) => handleInputChange('serviceCategory', e.target.value)}
                   required
                   disabled={!isEditMode}
@@ -184,74 +193,6 @@ const ServiceDetails = () => {
                   ))}
                 </select>
               </div>
-
-              {/* Dynamic Questions and Options */}
-              {service.questions.map((question, qIndex) => (
-                <div key={qIndex} className="col-12">
-                  <label className="form-label">Question {qIndex + 1}</label>
-                  <div className="input-group mb-3">
-                    <input
-                      type="text"
-                      className="form-control"
-                      placeholder="Enter question"
-                      value={question.question}
-                      onChange={(e) => handleQuestionChange(qIndex, e.target.value)}
-                      required
-                      disabled={!isEditMode}
-                    />
-                    {isEditMode && service.questions.length > 1 && (
-                      <button
-                        type="button"
-                        className="btn btn-danger"
-                        onClick={() => handleDeleteQuestion(qIndex)}
-                      >
-                        Remove
-                      </button>
-                    )}
-                  </div>
-                  {question.options.map((option, oIndex) => (
-                    <div key={oIndex} className="input-group mb-2">
-                      <input
-                        type="text"
-                        className="form-control"
-                        placeholder="Enter option"
-                        value={option}
-                        onChange={(e) => handleOptionChange(qIndex, oIndex, e.target.value)}
-                        required
-                        disabled={!isEditMode}
-                      />
-                      {isEditMode && question.options.length > 1 && (
-                        <button
-                          type="button"
-                          className="btn btn-outline-danger"
-                          onClick={() => handleDeleteOption(qIndex, oIndex)}
-                        >
-                          Remove
-                        </button>
-                      )}
-                    </div>
-                  ))}
-                  {isEditMode && (
-                    <button
-                      type="button"
-                      className="btn btn-outline-primary mb-3"
-                      onClick={() => handleAddOption(qIndex)}
-                    >
-                      Add Another Option
-                    </button>
-                  )}
-                </div>
-              ))}
-              {isEditMode && (
-                <button
-                  type="button"
-                  className="btn btn-outline-secondary mb-4"
-                  onClick={handleAddQuestion}
-                >
-                  Add Another Question
-                </button>
-              )}
-
               <div className="col-12">
                 {isEditMode && (
                   <button type="submit" className="btn btn-primary">

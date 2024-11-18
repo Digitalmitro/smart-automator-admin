@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion'
 import { message, Modal, Input, Form } from 'antd'
 import { CCard, CCardHeader, CCardBody } from '@coreui/react'
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import axios from 'axios'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
@@ -14,8 +14,11 @@ const ServiceCategoriesList = () => {
   const [isEditModalVisible, setIsEditModalVisible] = useState(false)
   const [selectedCategory, setSelectedCategory] = useState(null)
   const [form] = Form.useForm()
+  const [fileUrl, setFileUrl] = useState('') // State for uploaded file URL
+  const [uploading, setUploading] = useState(false) // Loader state for file upload
   const token = localStorage.getItem('token')
-
+  const fileInputRef = useRef(null) // Ref for file input
+  
   const getData = async () => {
     try {
       const res = await axios.get(`${process.env.REACT_APP_BACKEND_API}/admin/service-categories`, {
@@ -28,47 +31,66 @@ const ServiceCategoriesList = () => {
     }
   }
 
-  const handleToggleActive = async () => {
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0]
+    if (!file) {
+      message.error('Please select a valid file.')
+      return
+    }
+
+    const formData = new FormData()
+    formData.append('file', file)
+    setUploading(true)
+
     try {
-      const updatedCategory = { active: !selectedCategory.active }
-      const res = await axios.put(
-        `${process.env.REACT_APP_BACKEND_API}/admin/edit-service-category/${selectedCategory._id}`,
-        updatedCategory,
-        { headers: { token } },
+      const res = await axios.post(
+        `${process.env.REACT_APP_BACKEND_API}/upload`,
+        formData,
+        {
+          headers: { token, 'Content-Type': 'multipart/form-data' },
+        },
       )
-      message.success(res.data.message)
-      setIsModalVisible(false)
-      setSelectedCategory(null)
-      getData() // Refresh the data
+      setFileUrl(res.data.fileUrl)
+      message.success('Image uploaded successfully')
     } catch (error) {
-      message.error('Failed to update category status')
+      message.error('Failed to upload image')
+    } finally {
+      setUploading(false)
     }
   }
 
   const handleEdit = async (values) => {
     try {
+      const updatedValues = { ...values }
+      if (fileUrl) {
+        updatedValues.image = fileUrl // Include uploaded file URL if a new file is uploaded
+      }
+
       const res = await axios.put(
         `${process.env.REACT_APP_BACKEND_API}/admin/edit-service-category/${selectedCategory._id}`,
-        values,
+        updatedValues,
         { headers: { token } },
       )
       message.success(res.data.message)
       setIsEditModalVisible(false)
       setSelectedCategory(null)
+      setFileUrl('') // Reset file URL after submission
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '' // Clear file input
+      }
       getData() // Refresh the data
     } catch (error) {
       message.error('Failed to update category details')
     }
   }
 
-  const showModal = (category) => {
-    setSelectedCategory(category)
-    setIsModalVisible(true)
-  }
-
   const showEditModal = (category) => {
     setSelectedCategory(category)
-    form.setFieldsValue({ name: category.name, description: category.description })
+    form.setFieldsValue({
+      name: category.name,
+      description: category.description,
+    })
+    setFileUrl(category.image || '') // Pre-fill existing image URL
     setIsEditModalVisible(true)
   }
 
@@ -76,6 +98,10 @@ const ServiceCategoriesList = () => {
     setIsModalVisible(false)
     setIsEditModalVisible(false)
     setSelectedCategory(null)
+    setFileUrl('') // Reset file URL when canceling
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '' // Clear file input
+    }
   }
 
   useEffect(() => {
@@ -132,23 +158,7 @@ const ServiceCategoriesList = () => {
         </CCardBody>
       </CCard>
 
-      {/* Modal for confirming toggle */}
-      <Modal
-        title="Confirm Status Change"
-        visible={isModalVisible}
-        onOk={handleToggleActive}
-        onCancel={handleCancel}
-        okText="Yes, Change"
-        cancelText="No, Cancel"
-        centered={true}
-      >
-        <p>
-          Are you sure you want to {selectedCategory?.active ? 'deactivate' : 'activate'} this
-          category?
-        </p>
-      </Modal>
-
-      {/* Modal for editing category */}
+      {/* Edit Modal */}
       <Modal
         title="Edit Service Category"
         visible={isEditModalVisible}
@@ -180,6 +190,18 @@ const ServiceCategoriesList = () => {
             rules={[{ required: true, message: 'Please enter the category description' }]}
           >
             <Input.TextArea />
+          </Form.Item>
+          <Form.Item label="Upload Image">
+            <Input type="file" onChange={handleImageUpload} ref={fileInputRef} />
+            {uploading && <p>Uploading...</p>}
+            {fileUrl && (
+              <img
+                src={fileUrl}
+                alt="Uploaded"
+                className="img-thumbnail mt-2"
+                style={{ maxHeight: '150px' }}
+              />
+            )}
           </Form.Item>
         </Form>
       </Modal>
