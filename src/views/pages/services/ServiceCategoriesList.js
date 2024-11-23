@@ -14,11 +14,14 @@ const ServiceCategoriesList = () => {
   const [isEditModalVisible, setIsEditModalVisible] = useState(false)
   const [selectedCategory, setSelectedCategory] = useState(null)
   const [form] = Form.useForm()
-  const [fileUrl, setFileUrl] = useState('') // State for uploaded file URL
-  const [uploading, setUploading] = useState(false) // Loader state for file upload
+  const [fileUrl, setFileUrl] = useState('') // State for uploaded image file URL
+  const [logoUrl, setLogoUrl] = useState('') // State for uploaded logo file URL
+  const [uploadingImage, setUploadingImage] = useState(false)
+  const [uploadingLogo, setUploadingLogo] = useState(false)
   const token = localStorage.getItem('token')
-  const fileInputRef = useRef(null) // Ref for file input
-  
+  const imageInputRef = useRef(null)
+  const logoInputRef = useRef(null)
+
   const getData = async () => {
     try {
       const res = await axios.get(`${process.env.REACT_APP_BACKEND_API}/admin/service-categories`, {
@@ -31,7 +34,7 @@ const ServiceCategoriesList = () => {
     }
   }
 
-  const handleImageUpload = async (e) => {
+  const handleFileUpload = async (e, setFileUrl, setUploading) => {
     const file = e.target.files[0]
     if (!file) {
       message.error('Please select a valid file.')
@@ -51,9 +54,9 @@ const ServiceCategoriesList = () => {
         },
       )
       setFileUrl(res.data.fileUrl)
-      message.success('Image uploaded successfully')
+      message.success('File uploaded successfully')
     } catch (error) {
-      message.error('Failed to upload image')
+      message.error('Failed to upload file')
     } finally {
       setUploading(false)
     }
@@ -63,7 +66,10 @@ const ServiceCategoriesList = () => {
     try {
       const updatedValues = { ...values }
       if (fileUrl) {
-        updatedValues.image = fileUrl // Include uploaded file URL if a new file is uploaded
+        updatedValues.image = fileUrl // Include uploaded image URL if a new file is uploaded
+      }
+      if (logoUrl) {
+        updatedValues.logo = logoUrl // Include uploaded logo URL if a new file is uploaded
       }
 
       const res = await axios.put(
@@ -74,11 +80,15 @@ const ServiceCategoriesList = () => {
       message.success(res.data.message)
       setIsEditModalVisible(false)
       setSelectedCategory(null)
-      setFileUrl('') // Reset file URL after submission
-      if (fileInputRef.current) {
-        fileInputRef.current.value = '' // Clear file input
+      setFileUrl('')
+      setLogoUrl('')
+      if (imageInputRef.current) {
+        imageInputRef.current.value = ''
       }
-      getData() // Refresh the data
+      if (logoInputRef.current) {
+        logoInputRef.current.value = ''
+      }
+      getData()
     } catch (error) {
       message.error('Failed to update category details')
     }
@@ -90,17 +100,21 @@ const ServiceCategoriesList = () => {
       name: category.name,
       description: category.description,
     })
-    setFileUrl(category.image || '') // Pre-fill existing image URL
+    setFileUrl(category.image || '')
+    setLogoUrl(category.logo || '')
     setIsEditModalVisible(true)
   }
 
   const handleCancel = () => {
-    setIsModalVisible(false)
     setIsEditModalVisible(false)
     setSelectedCategory(null)
-    setFileUrl('') // Reset file URL when canceling
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '' // Clear file input
+    setFileUrl('')
+    setLogoUrl('')
+    if (imageInputRef.current) {
+      imageInputRef.current.value = ''
+    }
+    if (logoInputRef.current) {
+      logoInputRef.current.value = ''
     }
   }
 
@@ -143,9 +157,6 @@ const ServiceCategoriesList = () => {
                       </span>
                     </td>
                     <td>
-                      <button className="btn btn-warning" onClick={() => showModal(category)}>
-                        Toggle Status
-                      </button>{' '}
                       <button className="btn btn-primary" onClick={() => showEditModal(category)}>
                         Edit
                       </button>
@@ -192,11 +203,23 @@ const ServiceCategoriesList = () => {
             <Input.TextArea />
           </Form.Item>
           <Form.Item label="Upload Image">
-            <Input type="file" onChange={handleImageUpload} ref={fileInputRef} />
-            {uploading && <p>Uploading...</p>}
+            <Input type="file" onChange={(e) => handleFileUpload(e, setFileUrl, setUploadingImage)} ref={imageInputRef} />
+            {uploadingImage && <p>Uploading image...</p>}
             {fileUrl && (
               <img
                 src={fileUrl}
+                alt="Uploaded"
+                className="img-thumbnail mt-2"
+                style={{ maxHeight: '150px' }}
+              />
+            )}
+          </Form.Item>
+          <Form.Item label="Upload Logo">
+            <Input type="file" onChange={(e) => handleFileUpload(e, setLogoUrl, setUploadingLogo)} ref={logoInputRef} />
+            {uploadingLogo && <p>Uploading logo...</p>}
+            {logoUrl && (
+              <img
+                src={logoUrl}
                 alt="Uploaded"
                 className="img-thumbnail mt-2"
                 style={{ maxHeight: '150px' }}

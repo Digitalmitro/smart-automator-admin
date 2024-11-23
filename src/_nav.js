@@ -105,6 +105,19 @@ let _nav = [
       },
     ],
   },
+
+  {
+    component: CNavGroup,
+    name: 'Content Management',
+    icon: <CIcon icon={cilShieldAlt} customClassName="nav-icon" />,
+    items: [
+      {
+        component: CNavItem,
+        name: 'Home Page',
+        to: '/home-page',
+      },
+    ],
+  },
 ]
 
 export default _nav

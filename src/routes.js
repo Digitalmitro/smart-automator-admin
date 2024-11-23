@@ -27,6 +27,8 @@ const AddService = React.lazy(() => import('./views/pages/services/AddService'))
 const ServiceList = React.lazy(() => import('./views/pages/services/ServiceList'))
 const ServiceDetails = React.lazy(() => import('./views/pages/services/ServiceDetails'))
 
+const HomePageCMS = React.lazy(() => import('./views/pages/CMS/HomePage'))
+
 // Create Callback
 // const CreateCallback = React.lazy(() => import('./views/Leads_Create/CreateCallback'))
 // const CallBackViewDetails = React.lazy(() => import('./views/Leads_Create/CallbackViewDetails'))
@@ -93,6 +95,7 @@ const OrderAnalytics = React.lazy(() => import('./views/Analytics/Orders'))
 const TaxAnalytics = React.lazy(() => import('./views/Analytics/Taxes'))
 const StockAnalytics = React.lazy(() => import('./views/Analytics/Stocks'))
 
+
 const routes = [
   { path: '/', exact: true, name: 'Home' },
   { path: '/dashboard', name: 'Dashboard', element: Dashboard },
@@ -125,6 +128,7 @@ const routes = [
 
   { path: '/add-service-category', name: 'Add-Service-Category', element: AddServiceCategory, exact: true },
   { path: '/service-categories-list', name: 'Service-Categories-List', element: ServiceCategoriesList, exact: true },
+  { path: '/home-page', name: 'Home-Page-CMS', element: HomePageCMS, exact: true },
   // { path: '/update-product/:id', name: 'Update product', element: UpdateProduct, exact: true },
   // { path: '/order-list', name: 'Order list', element: AllOrder, exact: true },
   // { path: '/view-order/:id', name: 'View Order', element: ViewOrder, exact: true },
