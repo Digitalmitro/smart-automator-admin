@@ -17,7 +17,7 @@ const BlogList = () => {
       const res = await axios.get(`${process.env.REACT_APP_BACKEND_API}/admin/blogs`, {
         headers: { token },
       })
-      setData(res.data.blogs)
+      setData(res.data.data.blogs) // Access `blogs` from `data`
     } catch (error) {
       console.error('Error fetching blogs:', error)
       message.error('Failed to load blogs')
@@ -26,6 +26,28 @@ const BlogList = () => {
 
   const handleAddBlog = () => {
     navigate('/add-blog')
+  }
+
+  const handleEditBlog = (blogId) => {
+    navigate(`/edit-blog/${blogId}`)
+  }
+
+  const handleDeleteBlog = async (blogId) => {
+    // Confirm deletion before proceeding
+    const confirmDelete = window.confirm('Are you sure you want to delete this blog?')
+    if (confirmDelete) {
+      try {
+        const res = await axios.delete(`${process.env.REACT_APP_BACKEND_API}/admin/delete-blog/${blogId}`, {
+          headers: { token },
+        })
+        message.success(res.data.message)
+        // Re-fetch blog data after successful deletion
+        getData()
+      } catch (error) {
+        console.error('Error deleting blog:', error)
+        message.error('Failed to delete blog')
+      }
+    }
   }
 
   useEffect(() => {
@@ -54,22 +76,39 @@ const BlogList = () => {
               <thead>
                 <tr>
                   <th scope="col">Title</th>
-                  <th scope="col">Author</th>
+                  <th scope="col">Slug</th>
                   <th scope="col">Status</th>
-                  <th scope="col">Published Date</th>
+                  <th scope="col">Created Date</th>
+                  <th scope="col">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {data.map((blog) => (
                   <tr key={blog._id}>
                     <td style={{ textTransform: 'capitalize' }}>{blog.title}</td>
-                    <td>{blog.author}</td>
+                    <td>{blog.slug}</td>
                     <td>
                       <span style={{ color: blog.active ? 'green' : 'red' }}>
                         {blog.active ? 'Active' : 'Inactive'}
                       </span>
                     </td>
-                    <td>{new Date(blog.publishedAt).toLocaleDateString()}</td>
+                    <td>{new Date(blog.createdAt).toLocaleDateString()}</td>
+                    <td>
+                      <button
+                        className="btn btn-warning btn-sm"
+                        onClick={() => handleEditBlog(blog._id)}
+                      >
+                        Edit
+                      </button>
+                      &nbsp;
+                      &nbsp;
+                      <button
+                        className="btn btn-danger btn-sm ml-2"
+                        onClick={() => handleDeleteBlog(blog._id)}
+                      >
+                        Delete
+                      </button>
+                    </td>
                   </tr>
                 ))}
               </tbody>

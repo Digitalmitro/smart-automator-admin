@@ -113,6 +113,11 @@ let _nav = [
     items: [
       {
         component: CNavItem,
+        name: 'Manage Blogs',
+        to: '/blogs-list',
+      },
+      {
+        component: CNavItem,
         name: 'Home Page',
         to: '/home-page',
       },

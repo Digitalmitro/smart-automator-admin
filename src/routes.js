@@ -29,6 +29,10 @@ const ServiceDetails = React.lazy(() => import('./views/pages/services/ServiceDe
 
 const HomePageCMS = React.lazy(() => import('./views/pages/CMS/HomePage'))
 
+const AddBlog = React.lazy(() => import('./views/pages/CMS/blogs/AddBlog'))
+const EditBlog = React.lazy(() => import('./views/pages/CMS/blogs/EditBlog'))
+const BlogList = React.lazy(() => import('./views/pages/CMS/blogs/BlogList'))
+
 // Create Callback
 // const CreateCallback = React.lazy(() => import('./views/Leads_Create/CreateCallback'))
 // const CallBackViewDetails = React.lazy(() => import('./views/Leads_Create/CallbackViewDetails'))
@@ -129,6 +133,10 @@ const routes = [
   { path: '/add-service-category', name: 'Add-Service-Category', element: AddServiceCategory, exact: true },
   { path: '/service-categories-list', name: 'Service-Categories-List', element: ServiceCategoriesList, exact: true },
   { path: '/home-page', name: 'Home-Page-CMS', element: HomePageCMS, exact: true },
+
+  { path: '/add-blog', name: 'Add-Blog', element: AddBlog, exact: true },
+  { path: '/edit-blog/:id', name: 'Edit-Blog', element: EditBlog, exact: true },
+  { path: '/blogs-list', name: 'Blog-List', element: BlogList, exact: true },
   // { path: '/update-product/:id', name: 'Update product', element: UpdateProduct, exact: true },
   // { path: '/order-list', name: 'Order list', element: AllOrder, exact: true },
   // { path: '/view-order/:id', name: 'View Order', element: ViewOrder, exact: true },

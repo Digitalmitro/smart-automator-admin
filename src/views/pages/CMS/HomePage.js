@@ -5,11 +5,13 @@ import axios from 'axios'
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import { useNavigate } from 'react-router-dom'
+import { Select, Input, Button, Spin } from 'antd' // Import Ant Design components
+import TextArea from 'antd/es/input/TextArea'
+
+const { Option } = Select
 
 const HomePageCMS = () => {
   const navigate = useNavigate()
-  //   const [name, setName] = useState('')
-  // const [description, setDescription] = useState('')
   const [fileUrl, setFileUrl] = useState(null)
   const [isUploading, setIsUploading] = useState(false) // State to track upload status
   const token = localStorage.getItem('token')
@@ -18,13 +20,16 @@ const HomePageCMS = () => {
     heading: '',
     banner: '',
     description: '',
+    blogs: [], // To hold selected blogs
   })
+  const [allBlogs, setAllBlogs] = useState([]) // To hold all blogs
+  const [isFetchingBlogs, setIsFetchingBlogs] = useState(false)
 
+  // Fetch home page content
   const getHomeContent = async () => {
     await axios
       .get(`${process.env.REACT_APP_BACKEND_API}/home-cms`)
       .then((res) => {
-        console.log(res.data)
         setHomeCms(res.data.homeCMS.homePage)
       })
       .catch((e) => {
@@ -32,6 +37,32 @@ const HomePageCMS = () => {
       })
   }
 
+  // Fetch available blogs for the multi-select dropdown
+  const getAllBlogs = async () => {
+    setIsFetchingBlogs(true)
+    await axios
+      .get(`${process.env.REACT_APP_BACKEND_API}/admin/blogs`, {
+        headers: { token },
+      })
+      .then((res) => {
+        console.log(res.data)
+
+        const blogData = res.data.data.blogs.map((blog) => ({
+          label: blog.title, // Display blog title
+          value: blog._id, // Store blog ID
+        }))
+
+        setAllBlogs(blogData)
+      })
+      .catch((e) => {
+        toast.error('Failed to fetch blogs')
+      })
+      .finally(() => {
+        setIsFetchingBlogs(false)
+      })
+  }
+
+  // Handle image upload
   const handleImageUpload = async (e) => {
     const file = e.target.files[0]
     if (!file) {
@@ -42,7 +73,7 @@ const HomePageCMS = () => {
     const formData = new FormData()
     formData.append('file', file)
 
-    setIsUploading(true) // Start the loader
+    setIsUploading(true)
 
     try {
       const res = await axios.post(`${process.env.REACT_APP_BACKEND_API}/upload`, formData, {
@@ -54,13 +85,13 @@ const HomePageCMS = () => {
     } catch (error) {
       toast.error(error.response?.data?.message || 'Failed to upload image')
     } finally {
-      setIsUploading(false) // Stop the loader
+      setIsUploading(false)
     }
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    if (!fileUrl) {
+    if (!fileUrl && !homeCms.banner) {
       toast.error('Please upload an image before submitting.')
       return
     }
@@ -69,16 +100,16 @@ const HomePageCMS = () => {
       heading: homeCms.heading,
       banner: homeCms.banner,
       description: homeCms.description,
+      blogs: homeCms.blogs, // Include selected blog IDs
     }
-
-    console.log('PAYLOAD', payload)
 
     try {
       const res = await axios.post(`${process.env.REACT_APP_BACKEND_API}/admin/home-cms`, payload, {
         headers: { token },
       })
       toast.success(res.data.message || 'Home Page content updated successfully')
-      setHomeCms({})
+      // setHomeCms({ heading: '', banner: '', description: '', blogs: [] })
+      getHomeContent();
       setFileUrl('')
     } catch (error) {
       toast.error(error.response?.data?.message || 'Failed to update home page content')
@@ -87,6 +118,7 @@ const HomePageCMS = () => {
 
   useEffect(() => {
     getHomeContent()
+    getAllBlogs() // Fetch blogs for the dropdown
   }, [])
 
   useEffect(() => {
@@ -111,45 +143,32 @@ const HomePageCMS = () => {
                 <label htmlFor="inputName" className="form-label">
                   Heading
                 </label>
-                <input
+                <Input
                   value={homeCms.heading}
                   onChange={(e) => setHomeCms({ ...homeCms, heading: e.target.value })}
-                  type="text"
-                  className="form-control"
-                  id="inputName"
+                  placeholder="Enter heading"
                 />
               </div>
               <div className="col-md-6">
                 <label htmlFor="inputDescription" className="form-label">
                   Description
                 </label>
-                <input
+                <TextArea
                   value={homeCms.description}
                   onChange={(e) => setHomeCms({ ...homeCms, description: e.target.value })}
-                  type="text"
-                  className="form-control"
-                  id="inputDescription"
-                  required
+                  placeholder="Enter description"
                 />
               </div>
               <div className="col-md-6">
                 <label htmlFor="inputImage" className="form-label">
                   Upload Banner
                 </label>
-                <input
-                  type="file"
-                  className="form-control"
-                  id="inputImage"
-                  onChange={handleImageUpload}
-                  required
-                />
+                <Input type="file" onChange={handleImageUpload} />
               </div>
               <div className="col-md-6">
                 {isUploading ? (
                   <div className="text-center">
-                    <div className="spinner-border text-primary" role="status">
-                      <span className="visually-hidden">Loading...</span>
-                    </div>
+                    <Spin size="large" />
                   </div>
                 ) : (
                   (fileUrl || homeCms.banner) && (
@@ -157,18 +176,36 @@ const HomePageCMS = () => {
                       <label className="form-label">Preview</label>
                       <img
                         src={fileUrl ?? homeCms.banner}
-                        alt="Uploaded"
-                        className="img-thumbnail"
-                        style={{ maxHeight: '150px' }}
+                        className="img-fluid rounded-3"
+                        alt="Banner"
                       />
                     </>
                   )
                 )}
               </div>
-              <div className="col-12">
-                <button type="submit" className="btn btn-primary">
-                  Save Home Page
-                </button>
+              <div className="col-md-6">
+                <label htmlFor="inputBlogs" className="form-label">
+                  Select Blogs
+                </label>
+                <Select
+                  mode="multiple"
+                  allowClear
+                  style={{ width: '100%' }}
+                  placeholder="Select Blogs"
+                  value={homeCms.blogs}
+                  onChange={(selectedBlogs) => setHomeCms({ ...homeCms, blogs: selectedBlogs })}
+                >
+                  {allBlogs.map((blog) => (
+                    <Option key={blog.value} value={blog.value}>
+                      {blog.label}
+                    </Option>
+                  ))}
+                </Select>
+              </div>
+              <div className="col-md-6">
+                <Button type="primary" htmlType="submit" disabled={isUploading || isFetchingBlogs}>
+                  Save Changes
+                </Button>
               </div>
             </form>
           </motion.div>
