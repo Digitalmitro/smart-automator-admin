@@ -30,7 +30,8 @@ const HomePageCMS = () => {
     await axios
       .get(`${process.env.REACT_APP_BACKEND_API}/home-cms`)
       .then((res) => {
-        setHomeCms(res.data.homeCMS.homePage)
+        const blogIds = res.data.homeCMS.homePage.blogs.map((el) => el._id)
+        setHomeCms({...res.data.homeCMS.homePage, blogs: blogIds})
       })
       .catch((e) => {
         console.log(e)
