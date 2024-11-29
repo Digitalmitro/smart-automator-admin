@@ -33,6 +33,10 @@ const AddBlog = React.lazy(() => import('./views/pages/CMS/blogs/AddBlog'))
 const EditBlog = React.lazy(() => import('./views/pages/CMS/blogs/EditBlog'))
 const BlogList = React.lazy(() => import('./views/pages/CMS/blogs/BlogList'))
 
+const AddTestimonial = React.lazy(() => import('./views/pages/CMS/testimonials/AddTestimonial'))
+const EditTestimonial = React.lazy(() => import('./views/pages/CMS/testimonials/EditTestimonial'))
+const TestimonialList = React.lazy(() => import('./views/pages/CMS/testimonials/TestimonialList'))
+
 // Create Callback
 // const CreateCallback = React.lazy(() => import('./views/Leads_Create/CreateCallback'))
 // const CallBackViewDetails = React.lazy(() => import('./views/Leads_Create/CallbackViewDetails'))
@@ -137,6 +141,11 @@ const routes = [
   { path: '/add-blog', name: 'Add-Blog', element: AddBlog, exact: true },
   { path: '/edit-blog/:id', name: 'Edit-Blog', element: EditBlog, exact: true },
   { path: '/blogs-list', name: 'Blog-List', element: BlogList, exact: true },
+
+  { path: '/add-testimonial', name: 'Add-Testimonial', element: AddTestimonial, exact: true },
+  { path: '/edit-testimonial/:id', name: 'Edit-Blog', element: EditTestimonial, exact: true },
+  { path: '/testimonials-list', name: 'Blog-List', element: TestimonialList, exact: true },
+
   // { path: '/update-product/:id', name: 'Update product', element: UpdateProduct, exact: true },
   // { path: '/order-list', name: 'Order list', element: AllOrder, exact: true },
   // { path: '/view-order/:id', name: 'View Order', element: ViewOrder, exact: true },

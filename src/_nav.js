@@ -118,6 +118,11 @@ let _nav = [
       },
       {
         component: CNavItem,
+        name: 'Manage Testimonials',
+        to: '/testimonials-list',
+      },
+      {
+        component: CNavItem,
         name: 'Home Page',
         to: '/home-page',
       },
