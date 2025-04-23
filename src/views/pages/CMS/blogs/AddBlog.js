@@ -67,6 +67,8 @@ const AddBlog = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+
+    // i want this 
     if (!title || !description || !slug || !imageUrls.length) {
       toast.error('Please fill all required fields and upload at least one image.')
       return
@@ -170,7 +172,7 @@ const AddBlog = () => {
                 <ReactQuill
                   theme="snow"
                   value={description}
-                  onChange={(e) => setDescription(e.target.value)}
+                  onChange={setDescription}
                   className="form-control"
                   id="inputDescription"
                   rows="5"
