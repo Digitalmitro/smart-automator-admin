@@ -5,7 +5,8 @@ import axios from 'axios'
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import { useNavigate, useParams } from 'react-router-dom'
-
+import 'react-quill/dist/quill.snow.css'
+import ReactQuill from 'react-quill'
 const EditBlog = () => {
   const { id } = useParams()
   const navigate = useNavigate()
@@ -159,14 +160,15 @@ const EditBlog = () => {
                 <label htmlFor="inputDescription" className="form-label">
                   Description
                 </label>
-                <textarea
+                <ReactQuill
+                 theme="snow"
                   value={description}
-                  onChange={(e) => setDescription(e.target.value)}
+                  onChange={setDescription}
                   className="form-control"
                   id="inputDescription"
                   rows="5"
                   required
-                ></textarea>
+                />
               </div>
               <div className="col-md-6">
                 <label htmlFor="inputImages" className="form-label">
